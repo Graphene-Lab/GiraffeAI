@@ -57,7 +57,7 @@ Alternatively, open `index.html` directly in any modern browser. Cloud APIs can 
 - **Light / dark theme** and **6 UI languages**
 - **Installable as a PWA** (app-mode / standalone window)
 - **Streaming responses** with stop-generation control
-- **Multi-file attachments** — attach several files at once (or one at a time) to any message; the original bytes are uploaded and converted to Markdown **server-side** by the connected backend (MinimalChatApi `/v1/files`, or any OpenAI-compatible file endpoint)
+- **Multi-file attachments** — attach several files at once (or one at a time) to any message; the original bytes are uploaded and converted to Markdown **server-side** by the connected backend (AgentBridge `/v1/files`, or any OpenAI-compatible file endpoint)
 
 ## Giraffe AI vs. the Big Five
 
@@ -112,6 +112,30 @@ Giraffe AI is intentionally simple:
 - `start.sh` — Linux/macOS launcher: uses `python3` (with the macOS built-in Ruby as fallback) for the same role.
 - All data is stored in the browser's `localStorage` — nothing is sent anywhere except the model APIs you configure.
 
+## Auto-configuration (`--provider`)
+
+Start the launcher with a provider configuration and the client registers it (if not already
+present, same `name` + `endpoint` + `format`) and selects it as active — so AgentBridge and
+similar hosts can open a ready-to-chat window with no manual setup:
+
+```bash
+# Linux / macOS — raw JSON (URL-encoded automatically by the launcher):
+./start.sh --provider '{"name":"AgentBridge","format":"openai","model":"default-agent","endpoint":"http://localhost:5290/v1/chat/completions"}'
+
+# Windows — the JSON is passed base64url-encoded (no padding; safe on the cmd.exe command line):
+start.bat --provider eyJuYW1lIjoiQWdlbnRCcmlkZ2UiLCJmb3JtYXQiOiJvcGVuYWkiLCJtb2RlbCI6ImRlZmF1bHQtYWdlbnQiLCJlbmRwb2ludCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTI5MC92MS9jaGF0L2NvbXBsZXRpb25zIn0
+```
+
+The launcher appends `?provider=<url-encoded JSON>` to the opened URL; on load the client
+decodes it, registers/selects the provider and clears the query string (a later refresh does
+not re-apply it). Supported fields: `name`, `format` (`openai` / `ollama` / `anthropic` /
+`gemini`), `model`, `endpoint`, `apiKey`, `temperature`, `maxTokens`, `topP`,
+`reasoningEnabled`, `systemPrompt`, `attachments`, `textLimit`, `id`.
+
+> ⚠️ **Security note:** when an `apiKey` is included it is visible in the URL and stored in
+> the browser's `localStorage`. Keep `--provider` auto-config for local/trusted hosts and
+> avoid passing secrets on shared machines.
+
 ## File Attachments
 
 Attach files to any message via the paperclip button: several files can be selected at once
@@ -130,7 +154,7 @@ be removed individually. Attachment support is **per-provider configurable**:
     OpenAI-compatible, `source.base64` for Anthropic, `inlineData` for Gemini, `images[]` for
     Ollama.
   - *Documents* (PDF/DOCX/XLSX/…) are uploaded to the backend `POST /v1/files`
-    (e.g. MinimalChatApi → AllToMarkdown → `file_id`); the chat request includes the `file_ids`
+    (e.g. AgentBridge → AllToMarkdown → `file_id`); the chat request includes the `file_ids`
     in the request body (`file_ids`) as context. If the upload fails, the send is **blocked with a
     clear error** instead of silently losing the content. Anthropic native also supports documents
     inline (base64) and falls back to it when the provider has no `/files` endpoint.

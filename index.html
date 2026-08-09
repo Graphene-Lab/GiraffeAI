@@ -1002,6 +1002,49 @@
         });
         function init(){
             lD();
+            // Auto-configure a provider from the ?provider=<url-encoded JSON> query param
+            // (set by the launchers when started with --provider, e.g. from AgentBridge).
+            const urlParams = new URLSearchParams(window.location.search);
+            const providerJson = urlParams.get('provider');
+            if (providerJson) {
+                try {
+                    let cfg;
+                    try { cfg = JSON.parse(providerJson) } catch { cfg = JSON.parse(decodeURIComponent(providerJson)) }
+                    const dup = D.providers.find(p => p.name === cfg.name && p.endpoint === cfg.endpoint && p.format === cfg.format);
+                    if (!dup) {
+                        const np = {
+                            id: cfg.id || ('auto_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)),
+                            name: cfg.name || 'Auto Provider',
+                            format: cfg.format || 'openai',
+                            model: cfg.model || '',
+                            endpoint: cfg.endpoint || '',
+                            apiKey: cfg.apiKey || '',
+                            temperature: cfg.temperature ?? 0.7,
+                            maxTokens: cfg.maxTokens ?? 4096,
+                            topP: cfg.topP ?? 0.9,
+                            reasoningEnabled: cfg.reasoningEnabled || false,
+                            systemPrompt: cfg.systemPrompt || '',
+                            attachments: cfg.attachments !== false,
+                            textLimit: cfg.textLimit || 30000,
+                            template: 'custom',
+                            createdAt: Date.now()
+                        };
+                        D.providers.push(np);
+                        if (!D.chats[np.id]) D.chats[np.id] = {};
+                        D.activeProviderId = np.id;
+                        eAC(np.id);
+                    } else {
+                        D.activeProviderId = dup.id;
+                        eAC(dup.id);
+                    }
+                    sD();
+                    // Drop the query string so a later refresh does not re-apply it.
+                    const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+                    window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+                } catch (e) {
+                    console.error('Invalid provider auto-config:', e);
+                }
+            }
             D.providers.forEach(p=>{if(!D.chats[p.id])D.chats[p.id]={}});
             Object.keys(D.chats).forEach(pid=>{if(!D.providers.find(p=>p.id===pid))delete D.chats[pid]});
             if(D.activeProviderId&&!D.providers.find(p=>p.id===D.activeProviderId)){

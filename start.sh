@@ -18,6 +18,42 @@ BACKEND_PORT=8787
 URL="http://localhost:${PORT}/"
 SERVER_PID=""
 
+# ---------- Parsing argomenti ----------
+# --provider <json> (raw JSON, e.g. from AgentBridge) or an already URL-encoded value:
+# the JSON is appended to the opened URL as ?provider=<url-encoded JSON> and the client
+# registers/selects that provider on load (see index.html init()).
+AUTO_PROVIDER=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --provider)
+      AUTO_PROVIDER="$2"
+      shift 2
+      ;;
+    *)
+      echo "Parametro sconosciuto: $1"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -n "$AUTO_PROVIDER" ]; then
+  if [[ "$AUTO_PROVIDER" == \{* ]]; then
+    # Raw JSON: URL-encode it with python3 or ruby (same interpreters used by the server).
+    if command -v python3 >/dev/null 2>&1; then
+      ENCODED_PROVIDER=$(printf '%s' "$AUTO_PROVIDER" | python3 -c "import sys,urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+    elif command -v ruby >/dev/null 2>&1; then
+      ENCODED_PROVIDER=$(printf '%s' "$AUTO_PROVIDER" | ruby -r uri -e 'puts URI.encode_www_form_component(STDIN.read)')
+    else
+      echo "ERRORE: nessun interprete disponibile per codificare il JSON (python3 o ruby)." >&2
+      exit 1
+    fi
+  else
+    # Already URL-encoded: use as-is.
+    ENCODED_PROVIDER="$AUTO_PROVIDER"
+  fi
+  URL="${URL}?provider=${ENCODED_PROVIDER}"
+fi
+
 # ---------- [0] OS detection ----------
 case "$(uname -s)" in
   Darwin) OS_NAME="macos" ;;
