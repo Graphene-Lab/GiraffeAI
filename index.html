@@ -1105,8 +1105,9 @@
             cli=L.indexOf(cl);
             $('currentLangCode').textContent=cl.toUpperCase();
             // The release version is injected at packaging time by the release workflow
-            // (__CLIENT_VERSION__ -> the release number); unmodified copies show 'vdev'.
-            var cv="__CLIENT_VERSION__";if(cv==="__CLIENT_VERSION__")cv="dev";var cvEl=$('clientVersion');if(cvEl)cvEl.textContent='v'+cv;
+            // (the single __CLIENT_VERSION__ occurrence -> the release number); unmodified
+            // copies parse NaN and show 'vdev'.
+            var cv=parseInt("__CLIENT_VERSION__",10);if(!cv)cv="dev";var cvEl=$('clientVersion');if(cvEl)cvEl.textContent='v'+cv;
             aT();ut();sD();rA();
             if(D.activeProviderId)$('userInput').focus();
             updateTokenDisplay('--');
