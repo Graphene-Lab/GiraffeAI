@@ -51,6 +51,9 @@ jobs:
           # Runtime set only: the client page, the two launchers, the logo and the
           # README. tests/ and sync.bat are developer-only and never ship.
           cp index.html start.bat start.sh giraffe.svg README.md dist/
+          # Stamp the release number into the packaged client (the sidebar footer shows
+          # the running version) — the placeholder stays in the repo source.
+          sed -i "s/__CLIENT_VERSION__/${{ steps.ver.outputs.next }}/g" dist/index.html
           (cd dist && zip -qr "../giraffeai-${{ steps.ver.outputs.next }}.zip" .)
           unzip -l "giraffeai-${{ steps.ver.outputs.next }}.zip"
           ls -lh "giraffeai-${{ steps.ver.outputs.next }}.zip"
