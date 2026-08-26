@@ -1,0 +1,73 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  release.yml — Giraffe AI client release workflow
+#
+#  Every push to main publishes a NEW incremental version to GitHub Releases:
+#  the next version is (count of existing v* tags) + 1, so the first push
+#  publishes v1, the second v2, ... Each release carries the client zip
+#  giraffeai-<N>.zip (index.html + the platform launchers). Hosts such as
+#  AgentBridge install and update the client from this release — the tag IS
+#  the version indicator, which the plain repository archive zip cannot
+#  provide. The repo must stay PUBLIC: hosts download anonymously.
+# ═══════════════════════════════════════════════════════════════════════
+name: Release client zip
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Serializes runs per branch: the next version is computed from the existing
+# tags, so two concurrent runs must never read the same count. A queued run
+# starts only after the running one finished (its tag exists by then).
+concurrency:
+  group: giraffeai-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # All history + tags: the next version = existing v* tag count + 1.
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: ver
+        shell: bash
+        run: |
+          COUNT=$(git tag -l 'v*' | wc -l)
+          NEXT=$((COUNT + 1))
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Next client version: v$NEXT (existing tags: $COUNT)"
+
+      - name: Build client zip
+        shell: bash
+        run: |
+          mkdir -p dist
+          # Runtime set only: the client page, the two launchers, the logo and the
+          # README. tests/ and sync.bat are developer-only and never ship.
+          cp index.html start.bat start.sh giraffe.svg README.md dist/
+          (cd dist && zip -qr "../giraffeai-${{ steps.ver.outputs.next }}.zip" .)
+          unzip -l "giraffeai-${{ steps.ver.outputs.next }}.zip"
+          ls -lh "giraffeai-${{ steps.ver.outputs.next }}.zip"
+
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.ver.outputs.next }}
+        run: |
+          ZIP="giraffeai-$VERSION.zip"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            # Same-version re-run (workflow_dispatch): refresh the asset on the
+            # existing tag instead of failing.
+            gh release upload "v$VERSION" "$ZIP" --clobber
+            gh release edit "v$VERSION" --notes "Giraffe AI client (index.html + launchers) — hosts install/update from this release."
+          else
+            gh release create "v$VERSION" "$ZIP" \
+              --title "v$VERSION" \
+              --notes "Giraffe AI client (index.html + launchers) — hosts install/update from this release."
+          fi
