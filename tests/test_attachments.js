@@ -10,18 +10,26 @@ const js = html.substring(scriptStart + 8, scriptEnd)
     // Don't execute the PWA bootstrap calls at the end of the script; the function
     // declarations above them are still hoisted so window.installPwa=iP resolves.
     .replace('registerServiceWorker();createManifest();setupPwaInstall();', 'void 0;')
-    // Inject an export probe INSIDE the IIFE, right after init().
-    .replace('window.installPwa=iP;init()})();', 'window.installPwa=iP;init();window.__internals={isTextualFile,readFileText,uploadFiles,fileToBase64,buildMessageWithAttachments,buildAPIMessagesWithFiles,TEXTUAL_EXTS,TEXTUAL_NAMES,ALLOWED_TYPES,setPending:(a)=>{pendingAttachments=a},setD:(d)=>{D=d},getChat:()=>gACR()};})();');
+    // Inject an export probe INSIDE the IIFE, right before init() runs.
+    .replace('window.resetTokens=resetTokens;', 'window.resetTokens=resetTokens;window.__internals={isTextualFile,readFileText,uploadFiles,fileToBase64,buildMessageWithAttachments,buildAPIMessagesWithFiles,renderAgentAttachments,TEXTUAL_EXTS,TEXTUAL_NAMES,ALLOWED_TYPES,setPending:(a)=>{pendingAttachments=a},setD:(d)=>{D=d},getChat:()=>gACR()};');
 // Extract only the functions we want to test by slicing the IIFE body.
 // The IIFE is (function(){ ... })(); — we grab everything inside and rely on
 // the const definitions being hoisted before our test code runs (they aren't,
 // so we eval the whole thing in a sandbox with DOM stubs and expose internals).
 const makeEl = (id) => ({
-    id, textContent: '', innerHTML: '', className: '', value: '', checked: false,
+    id, innerHTML: '', className: '', value: '', checked: false,
     style: {}, disabled: false, placeholder: '', rows: 0,
     querySelector: () => null, querySelectorAll: () => [],
     classList: { toggle() {} }, setAttribute() {}, appendChild() {}, focus() {},
     scrollHeight: 0, scrollTop: 0, addEventListener() {},
+    get textContent() { return this._t || ''; },
+    // eH() escapes text through a probe element (textContent in, innerHTML out): the stub must
+    // mirror the DOM, or every escaped value in a rendered attachment chip comes back empty.
+    set textContent(v) {
+        this._t = v == null ? '' : String(v);
+        this.innerHTML = this._t.replace(/[&<>"']/g,
+            c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    },
 });
 const elements = {};
 const sandbox = {
@@ -50,6 +58,8 @@ const sandbox = {
     requestAnimationFrame: (fn) => setTimeout(fn, 0),
     confirm: () => true,
     addEventListener() {},
+    // Globals init() and the attachment renderer read from the environment (a vm context inherits nothing).
+    URLSearchParams, atob, btoa,
     // PWA bootstrap globals (defined after the IIFE; stubs avoid evaluation issues)
     registerServiceWorker() {}, createManifest() {}, setupPwaInstall() {}, iP() {},
 };
@@ -215,6 +225,17 @@ console.log('');
   } finally {
     sandbox.fetch = prevFetch3;
   }
+
+  // Agent-delivered attachments: a file above the harness inline limit arrives as a LOCAL
+  // REFERENCE (no payload — it stays on the machine that ran the agent). A browser cannot fetch
+  // the sandbox path, so it must render a chip with the name, never a dead link.
+  const refHtml = vm.runInContext(`window.__internals.renderAgentAttachments([
+      { name: 'episodio.mp3', resource: { uri: '/podcast/eventi/episodio.mp3', mimeType: 'audio/mpeg', localRef: true } },
+      { name: 'script.md', resource: { uri: '/podcast/eventi/script.md', mimeType: 'text/markdown', blob: 'aGVsbG8=' } } ])`, ctx);
+  T('local-reference attachment renders a chip, not a dead link',
+      refHtml.includes('(local file)') && !refHtml.includes('href="/podcast/eventi/episodio.mp3"'), refHtml);
+  T('local-reference attachment keeps the file name', refHtml.includes('episodio.mp3'), refHtml);
+  T('inlined attachment still renders a download link', refHtml.includes('blob:stub'), refHtml);
 
   console.log('');
   console.log(`${pass} passed, ${fail} failed ${fail === 0 ? 'ALL OK!' : ''}`);

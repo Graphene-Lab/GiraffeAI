@@ -1030,7 +1030,7 @@
                         const blob=new Blob([res.text],{type:mime});
                         href=URL.createObjectURL(blob);
                     }catch(e){href='#'}
-                }else if(uri && !uri.startsWith('file://')){
+                }else if(uri && !uri.startsWith('file://') && res.localRef!==true){
                     href=uri;
                 }else if(uri){
                     return `<div class="attachment-chip" title="${eH(uri)}"><span class="file-icon">📎</span><span class="file-name">${eH(name)}</span><span style="font-size:0.7em;color:var(--text2)">(local file)</span></div>`;
