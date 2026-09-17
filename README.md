@@ -26,7 +26,7 @@ Giraffe AI is a featherweight AI chat client that runs directly in your browser.
 
 **Linux / macOS** — run `./start.sh`
 
-The launcher starts a tiny local server, opens the app in app-mode, and proxies `/v1/*` requests to a local OpenAI-compatible model server (e.g. llama.cpp, Ollama, LM Studio) on `127.0.0.1:8787` — so local models work with no CORS workarounds and no API key.
+The launcher starts a tiny local server, opens the app in app-mode, and proxies `/v1/*` requests to the local OpenAI-compatible model server named by the provider's endpoint (e.g. llama.cpp, Ollama, LM Studio, or AgentBridge) — so local models work with no CORS workarounds and no API key. When launched with a `--provider` configuration the proxy target is taken from that provider's endpoint host and port; without one it falls back to `127.0.0.1:8787`.
 
 Cloud providers (OpenAI, DeepSeek, Groq, OpenRouter, …) are configured in seconds from the built-in presets: pick a preset, paste your API key, done.
 
@@ -83,7 +83,7 @@ Compared with the five most popular AI chat platforms — **ChatGPT**, **Claude.
 - **Provider-agnostic** — one lightweight UI for cloud APIs *and* local models. No vendor lock-in, no model ceiling.
 - **Near-zero footprint** — nothing runs in the background, no server daemon, no database. It occupies essentially no resources.
 - **Private by design** — API keys and chat history never leave your machine; the only network calls go to the model providers you explicitly configure.
-- **Smart same-origin proxy** — the launcher embeds a tiny reverse proxy (`/v1/*` → `127.0.0.1:8787`) so local models work without CORS workarounds, browser flags, or extensions.
+- **Smart same-origin proxy** — the launcher embeds a tiny reverse proxy (`/v1/*` → the provider's endpoint host:port, `127.0.0.1:8787` by default) so local models work without CORS workarounds, browser flags, or extensions.
 
 ## Giraffe AI vs. other API clients
 
@@ -108,7 +108,7 @@ These apps share Giraffe AI's philosophy — one UI, any provider — but they c
 Giraffe AI is intentionally simple:
 
 - `index.html` — the entire chat client, self-contained (HTML + CSS + JS), no external libraries.
-- `start.bat` — Windows launcher: a built-in PowerShell `HttpListener` on port `8000` that serves the app and proxies `/v1/*` to `127.0.0.1:8787` (same-origin, so no CORS).
+- `start.bat` — Windows launcher: a built-in PowerShell `HttpListener` on port `8000` that serves the app and proxies `/v1/*` to the provider's endpoint host:port (`127.0.0.1:8787` when no provider is passed) — same-origin, so no CORS.
 - `start.sh` — Linux/macOS launcher: uses `python3` (with the macOS built-in Ruby as fallback) for the same role.
 - All data is stored in the browser's `localStorage` — nothing is sent anywhere except the model APIs you configure.
 

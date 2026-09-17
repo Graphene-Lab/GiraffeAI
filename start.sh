@@ -2,7 +2,8 @@
 # Giraffe AI Launcher - Linux / macOS
 #
 # Serves the chat (index.html) on http://localhost:8000/ and proxies /v1/*
-# to the local LLM at http://127.0.0.1:8787 (OpenAI-compatible, no API key).
+# to the local LLM named by the provider's endpoint (OpenAI-compatible, no API
+# key); with no provider it falls back to http://127.0.0.1:8787.
 # The browser talks to the same origin, so no CORS and no insecure flags.
 #
 # No external dependencies: uses python3 when available; on macOS it falls
@@ -54,6 +55,34 @@ if [ -n "$AUTO_PROVIDER" ]; then
   URL="${URL}?provider=${ENCODED_PROVIDER}"
 fi
 
+# ---------- derive the proxy backend from the provider endpoint ----------
+# The launcher forwards /v1/* to the local LLM/AgentBridge backend. That backend's
+# host:port must come from the provider endpoint the host passed (e.g. AgentBridge on
+# http://localhost:5290), NOT a hardcoded port — otherwise the proxy connects to a
+# port nothing is listening on and every chat fails with a 502. Falls back to the
+# historical default 127.0.0.1:8787 when no provider is passed or it can't be parsed.
+UPSTREAM_HOST="127.0.0.1"
+UPSTREAM_PORT="8787"
+if [ -n "$AUTO_PROVIDER" ]; then
+  RAW_PROVIDER="$AUTO_PROVIDER"
+  if [[ "$AUTO_PROVIDER" != \{* ]]; then
+    # Already URL-encoded: decode before parsing.
+    if command -v python3 >/dev/null 2>&1; then
+      RAW_PROVIDER=$(printf '%s' "$AUTO_PROVIDER" | python3 -c "import sys,urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+    elif command -v ruby >/dev/null 2>&1; then
+      RAW_PROVIDER=$(printf '%s' "$AUTO_PROVIDER" | ruby -r uri -e 'puts URI.decode_www_form_component(STDIN.read)')
+    fi
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    UPSTREAM_LINE=$(printf '%s' "$RAW_PROVIDER" | python3 -c "import sys,json;from urllib.parse import urlparse;e=json.load(sys.stdin).get('endpoint','');u=urlparse(e);print((u.hostname or '')+' '+(str(u.port) if u.port else ''))" 2>/dev/null)
+  elif command -v ruby >/dev/null 2>&1; then
+    UPSTREAM_LINE=$(printf '%s' "$RAW_PROVIDER" | ruby -r json -r uri -e 'e=(JSON.parse(STDIN.read)["endpoint"]||"");u=URI.parse(e);puts [(u.host||""),(u.port||"")].join(" ")' 2>/dev/null)
+  fi
+  read -r uh up <<< "$UPSTREAM_LINE"
+  [ -n "$uh" ] && UPSTREAM_HOST="$uh"
+  [ -n "$up" ] && UPSTREAM_PORT="$up"
+fi
+
 # ---------- [0] OS detection ----------
 case "$(uname -s)" in
   Darwin) OS_NAME="macos" ;;
@@ -83,15 +112,15 @@ fi
 start_server() {
   if command -v python3 >/dev/null 2>&1; then
     echo "[2/4] Starting server (python3)..."
-    python3 - "$SCRIPT_DIR" "$PORT" <<'PY' &
+    UPSTREAM_HOST="$UPSTREAM_HOST" UPSTREAM_PORT="$UPSTREAM_PORT" python3 - "$SCRIPT_DIR" "$PORT" <<'PY' &
 import http.client, os, signal, sys, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, unquote
 
 ROOT = sys.argv[1]
 PORT = int(sys.argv[2])
-BACKEND_HOST = '127.0.0.1'
-BACKEND_PORT = 8787
+BACKEND_HOST = os.environ.get('UPSTREAM_HOST', '127.0.0.1')
+BACKEND_PORT = int(os.environ.get('UPSTREAM_PORT', '8787'))
 FORWARD_HEADERS = ('content-type', 'authorization', 'accept')
 
 
@@ -179,14 +208,14 @@ server.serve_forever()
 PY
   elif [ "$OS_NAME" = "macos" ] && command -v ruby >/dev/null 2>&1; then
     echo "[2/4] Starting server (ruby, macOS built-in)..."
-    ruby - "$SCRIPT_DIR" "$PORT" <<'RB' &
+    UPSTREAM_HOST="$UPSTREAM_HOST" UPSTREAM_PORT="$UPSTREAM_PORT" ruby - "$SCRIPT_DIR" "$PORT" <<'RB' &
 require 'webrick'
 require 'socket'
 
 ROOT = File.expand_path(ARGV[0])
 PORT = Integer(ARGV[1])
-BACKEND = '127.0.0.1'
-BACKEND_PORT = 8787
+BACKEND = ENV['UPSTREAM_HOST'] || '127.0.0.1'
+BACKEND_PORT = (ENV['UPSTREAM_PORT'] || '8787').to_i
 
 class ChunkedReader
   def initialize(sock, seed = '')
