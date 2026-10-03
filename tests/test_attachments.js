@@ -1,9 +1,10 @@
 // Unit tests for the pure functions added/modified in GiraffeAI/index.html
 // These functions are extracted verbatim from the page and evaluated in isolation.
 const fs = require('fs');
+const path = require('path');
 const vm = require('vm');
 
-const html = fs.readFileSync('C:/Users/andre/OneDrive/Sorgenti/GiraffeAI/index.html', 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 const scriptStart = html.indexOf('<script>');
 const scriptEnd = html.indexOf('</script>');
 const js = html.substring(scriptStart + 8, scriptEnd)
