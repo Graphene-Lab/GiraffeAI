@@ -108,6 +108,7 @@
         .message-content{background:var(--surface2);padding:14px 18px;border-radius:var(--radius);line-height:1.55;font-size:.9em;word-break:break-word;position:relative;border:1px solid var(--border)}
         .message.user .message-content{background:var(--accent);border-color:var(--accent);color:#fff;border-bottom-right-radius:4px}
         .message.assistant .message-content{border-bottom-left-radius:4px;border-color:#2a2a44}
+        .message-loading{color:var(--text2)}
         body.light-mode .message.assistant .message-content{border-color:#c0c0d0}
         .message-content pre{background:#0d0d1a;border-radius:var(--radius-xs);padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:.82em;border:1px solid var(--border);position:relative;margin:10px 0}
         body.light-mode .message-content pre{background:#e8e8f0;color:#1a1a2e}
@@ -327,7 +328,7 @@
     <script>
     (function(){
         const L=['en','it','fr','de','es','ru'];
-        const T={'app-title':['Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI'],'new-chat':['New Chat','Nuova Chat','Nouveau Chat','Neuer Chat','Nuevo Chat','Новый чат'],'providers-heading':['Providers','Provider','Fournisseurs','Anbieter','Proveedores','Провайдеры'],'add-provider':['Add Provider','Aggiungi Provider','Ajouter un fournisseur','Anbieter hinzufügen','Agregar proveedor','Добавить провайдера'],'edit-provider':['Edit Provider','Modifica Provider','Modifier le fournisseur','Anbieter bearbeiten','Editar proveedor','Редактировать провайдера'],'chat-history-heading':['Chat History','Cronologia Chat','Historique des chats','Chat-Verlauf','Historial de chat','История чатов'],'sidebar-footer':['v1.0 · Local Storage','v1.0 · Memoria locale','v1.0 · Stockage local','v1.0 · Lokaler Speicher','v1.0 · Almacenamiento local','v1.0 · Локальное хранилище'],'configure-prompt':['Configure a provider to begin','Configura un provider per iniziare','Configurez un fournisseur pour commencer','Konfigurieren Sie einen Anbieter, um zu beginnen','Configure un proveedor para comenzar','Настройте провайдера, чтобы начать'],'providers':['Providers','Provider','Fournisseurs','Anbieter','Proveedores','Провайдеры'],'settings':['Settings','Impostazioni','Paramètres','Einstellungen','Configuración','Настройки'],'install':['Install','Installa','Installer','Installieren','Instalar','Установить'],'welcome-title':['Welcome to Giraffe AI','Benvenuto su Giraffe AI','Bienvenue sur Giraffe AI','Willkommen bei Giraffe AI','Bienvenido a Giraffe AI','Добро пожаловать в Giraffe AI'],'welcome-text':['Add a provider to get started, or select one from the sidebar.','Aggiungi un provider per iniziare, o selezionane uno dalla barra laterale.','Ajoutez un fournisseur pour commencer, ou sélectionnez-en un dans la barre latérale.','Fügen Sie einen Anbieter hinzu oder wählen Sie einen aus der Seitenleiste.','Agregue un proveedor para comenzar, o seleccione uno de la barra lateral.','Добавьте провайдера, чтобы начать, или выберите из боковой панели.'],'type-message-placeholder':['Type your message... (Shift+Enter for new line)','Scrivi il tuo messaggio... (Maiusc+Invio per nuova riga)','Tapez votre message... (Maj+Entrée pour nouvelle ligne)','Nachricht eingeben... (Umschalt+Eingabe für neue Zeile)','Escribe tu mensaje... (Mayús+Enter para nueva línea)','Введите сообщение... (Shift+Enter для новой строки)'],'quick-setup':['Quick Setup (Pre-configured)','Configurazione rapida (Pre-configurata)','Configuration rapide (Pré-configurée)','Schnelleinrichtung (Vorkonfiguriert)','Configuración rápida (Preconfigurada)','Быстрая настройка (Предварительно)'],'provider-name':['Provider Name','Nome Provider','Nom du fournisseur','Anbietername','Nombre del proveedor','Имя провайдера'],'api-format':['API Format','Formato API','Format API','API-Format','Formato API','Формат API'],'model-name':['Model Name','Nome Modello','Nom du modèle','Modellname','Nombre del modelo','Имя модели'],'api-endpoint':['API Endpoint URL','URL Endpoint API','URL de l\'endpoint API','API-Endpunkt-URL','URL del endpoint API','URL конечной точки API'],'api-key':['API Key','Chiave API','Clé API','API-Schlüssel','Clave API','API-ключ'],'temperature':['Temperature','Temperatura','Température','Temperatur','Temperatura','Температура'],'max-tokens':['Max Tokens','Token Massimi','Jetons max','Max. Token','Tokens máximos','Макс. токенов'],'top-p':['Top P','Top P','Top P','Top P','Top P','Top P'],'enable-reasoning':['Enable Reasoning/Thinking (for supported models)','Abilita Ragionamento (per modelli supportati)','Activer le raisonnement (pour modèles pris en charge)','Argumentieren/Denken aktivieren (für unterstützte Modelle)','Habilitar razonamiento (para modelos compatibles)','Включить рассуждение (для поддерживаемых моделей)'],'system-prompt':['System Prompt (optional)','Prompt di sistema (opzionale)','Invite système (optionnel)','System-Prompt (optional)','Prompt del sistema (opcional)','Системный промпт (опционально)'],'delete':['Delete','Elimina','Supprimer','Löschen','Eliminar','Удалить'],'cancel':['Cancel','Annulla','Annuler','Abbrechen','Cancelar','Отмена'],'save-provider':['Save Provider','Salva Provider','Enregistrer le fournisseur','Anbieter speichern','Guardar proveedor','Сохранить провайдера'],'chat-settings':['Chat Settings','Impostazioni Chat','Paramètres de chat','Chat-Einstellungen','Configuración de chat','Настройки чата'],'system-prompt-override':['System Prompt (overrides provider default)','Prompt di sistema (sovrascrive il default del provider)','Invite système (remplace le défaut du fournisseur)','System-Prompt (überschreibt Anbieterstandard)','Prompt del sistema (anula el predeterminado del proveedor)','Системный промпт (переопределяет провайдера)'],'temperature-override':['Temperature Override','Sovrascrivi Temperatura','Remplacer la température','Temperatur überschreiben','Anular temperatura','Переопределить температуру'],'max-tokens-override':['Max Tokens Override','Sovrascrivi Token Massimi','Remplacer les jetons max','Max. Token überschreiben','Anular tokens máximos','Переопределить макс. токены'],'save':['Save','Salva','Enregistrer','Speichern','Guardar','Сохранить'],'clear-all-data':['Clear All Data','Cancella tutti i dati','Effacer toutes les données','Alle Daten löschen','Borrar todos los datos','Удалить все данные'],'no-provider-selected':['No Provider Selected','Nessun provider selezionato','Aucun fournisseur sélectionné','Kein Anbieter ausgewählt','Ningún proveedor seleccionado','Провайдер не выбран'],'select-provider':['Select a provider','Seleziona un provider','Sélectionnez un fournisseur','Wählen Sie einen Anbieter','Seleccione un proveedor','Выберите провайдера'],'start-conversation':['Start a conversation','Inizia una conversazione','Démarrer une conversation','Ein Gespräch beginnen','Iniciar una conversación','Начать разговор'],'no-provider-message':['Add or select a provider from the sidebar.','Aggiungi o seleziona un provider dalla barra laterale.','Ajoutez ou sélectionnez un fournisseur dans la barre latérale.','Fügen Sie einen Anbieter hinzu oder wählen Sie einen aus der Seitenleiste.','Agregue o seleccione un proveedor de la barra lateral.','Добавьте или выберите провайдера на боковой панели.'],'no-providers-yet':['No providers yet.<br>Click below to add one.','Nessun provider.<br>Clicca sotto per aggiungerne uno.','Aucun fournisseur.<br>Cliquez ci-dessous pour en ajouter un.','Noch keine Anbieter.<br>Klicken Sie unten, um einen hinzuzufügen.','Aún no hay proveedores.<br>Haga clic abajo para agregar uno.','Провайдеров пока нет.<br>Нажмите ниже, чтобы добавить.'],'no-chats':['No chats yet','Nessuna chat ancora','Aucun chat pour l\'instant','Noch keine Chats','Aún no hay chats','Чатов пока нет'],'untitled-chat':['Untitled Chat','Chat senza titolo','Chat sans titre','Unbenannter Chat','Chat sin título','Безымянный чат'],'reasoning-summary':['🧠 Reasoning (click to expand)','🧠 Ragionamento (clicca per espandere)','🧠 Raisonnement (cliquez pour développer)','🧠 Argumentation (zum Erweitern klicken)','🧠 Razonamiento (clic para expandir)','🧠 Рассуждение (нажмите, чтобы развернуть)'],'copy':['📋 Copy','📋 Copia','📋 Copier','📋 Kopieren','📋 Copiar','📋 Копировать'],'regenerate':['🔄 Regenerate','🔄 Rigenera','🔄 Régénérer','🔄 Neu generieren','🔄 Regenerar','🔄 Пересоздать'],'copied':['📋 Copied to clipboard','📋 Copiato negli appunti','📋 Copié dans le presse-papier','📋 In die Zwischenablage kopiert','📋 Copiado al portapapeles','📋 Скопировано в буфер обмена'],'copy-failed':['⚠ Failed to copy','⚠ Copia fallita','⚠ Échec de la copie','⚠ Kopieren fehlgeschlagen','⚠ Error al copiar','⚠ Не удалось скопировать'],'generation-stopped':['⏹ Generation stopped','⏹ Generazione fermata','⏹ Génération arrêtée','⏹ Generierung gestoppt','⏹ Generación detenida','⏹ Генерация остановлена'],'data-saved':['💾 Data saved','💾 Dati salvati','💾 Données enregistrées','💾 Daten gespeichert','💾 Datos guardados','💾 Данные сохранены'],'provider-saved':['✅ Provider saved successfully!','✅ Provider salvato con successo!','✅ Fournisseur enregistré avec succès !','✅ Anbieter erfolgreich gespeichert!','✅ ¡Proveedor guardado exitosamente!','✅ Провайдер успешно сохранен!'],'provider-deleted':['🗑 Provider deleted.','🗑 Provider eliminato.','🗑 Fournisseur supprimé.','🗑 Anbieter gelöscht.','🗑 Proveedor eliminado.','🗑 Провайдер удален.'],'preset-loaded':['📋 preset loaded. Enter your API key.','📋 preset caricato. Inserisci la tua chiave API.','📋 préréglage chargé. Entrez votre clé API.','📋 Voreinstellung geladen. Geben Sie Ihren API-Schlüssel ein.','📋 preajuste cargado. Ingrese su clave API.','📋 пресет загружен. Введите ваш API-ключ.'],'new-chat-created':['✨ New chat created','✨ Nuova chat creata','✨ Nouveau chat créé','✨ Neuer Chat erstellt','✨ Nuevo chat creado','✨ Новый чат создан'],'settings-saved':['✅ Settings saved','✅ Impostazioni salvate','✅ Paramètres enregistrés','✅ Einstellungen gespeichert','✅ Configuración guardada','✅ Настройки сохранены'],'all-data-cleared':['🗑 All data cleared.','🗑 Tutti i dati cancellati.','🗑 Toutes les données effacées.','🗑 Alle Daten gelöscht.','🗑 Todos los datos borrados.','🗑 Все данные удалены.'],'error-api':['❌ API error','❌ Errore API','❌ Erreur API','❌ API-Fehler','❌ Error de API','❌ Ошибка API'],'stop-generation':['⏹ Generation stopped','⏹ Generazione fermata','⏹ Génération arrêtée','⏹ Generierung gestoppt','⏹ Generación detenida','⏹ Генерация остановлена'],'confirm-delete-provider':['Delete this provider and all its chats? This cannot be undone.','Eliminare questo provider e tutte le sue chat? Non può essere annullato.','Supprimer ce fournisseur et tous ses chats ? Cette action est irréversible.','Diesen Anbieter und alle seine Chats löschen? Dies kann nicht rückgängig gemacht werden.','¿Eliminar este proveedor y todos sus chats? Esta acción no se puede deshacer.','Удалить этого провайдера и все его чаты? Это действие нельзя отменить.'],'confirm-delete-all':['⚠️ This will delete ALL providers, chats, and settings. Are you sure?','⚠️ Questo eliminerà TUTTI i provider, le chat e le impostazioni. Sei sicuro?','⚠️ Cela supprimera TOUS les fournisseurs, chats et paramètres. Êtes-vous sûr ?','⚠️ Dies löscht ALLE Anbieter, Chats und Einstellungen. Sind Sie sicher?','⚠️ Esto eliminará TODOS los proveedores, chats y configuraciones. ¿Está seguro?','⚠️ Это удалит ВСЕХ провайдеров, чаты и настройки. Вы уверены?'],'file-too-large':['File too large: {name}','File troppo grande: {name}','Fichier trop volumineux : {name}','Datei zu groß: {name}','Archivo demasiado grande: {name}','Файл слишком большой: {name}'],'file-type-unsupported':['File type not supported: {name}','Tipo di file non supportato: {name}','Type de fichier non pris en charge : {name}','Dateityp nicht unterstützt: {name}','Tipo de archivo no soportado: {name}','Тип файла не поддерживается: {name}'],'file-already-attached':['File already attached: {name}','File già allegato: {name}','Fichier déjà attaché : {name}','Datei bereits angehängt: {name}','Archivo ya adjuntado: {name}','Файл уже прикреплен: {name}'],'files-attached':['{n} file(s) attached','{n} file allegati','{n} fichier(s) attaché(s)','{n} Datei(en) angehängt','{n} archivo(s) adjuntado(s)','прикреплено файл(ов): {n}'],'uploading-files':['Uploading files...','Caricamento file...','Téléchargement des fichiers...','Dateien werden hochgeladen...','Subiendo archivos...','Загрузка файлов...'],'attachments-disabled':['Attachments (images/documents) are disabled for this provider: {name}','Allegati (immagini/documenti) disabilitati per questo provider: {name}','Pièces jointes (images/documents) désactivées pour ce fournisseur : {name}','Anhänge (Bilder/Dokumente) für diesen Anbieter deaktiviert: {name}','Adjuntos (imágenes/documentos) deshabilitados para este proveedor: {name}','Вложения (изображения/документы) отключены для этого провайдера: {name}'],'text-limit':['Text Char Limit / File','Limite Caratteri / File','Limite de caractères / Fichier','Zeichenlimit / Datei','Límite de caracteres / Archivo','Лимит символов / файл']};
+        const T={'waiting-response':['Waiting for response…','In attesa della risposta…','En attente de la réponse…','Warten auf Antwort…','Esperando respuesta…','Ожидание ответа…'],'app-title':['Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI','Giraffe AI'],'new-chat':['New Chat','Nuova Chat','Nouveau Chat','Neuer Chat','Nuevo Chat','Новый чат'],'providers-heading':['Providers','Provider','Fournisseurs','Anbieter','Proveedores','Провайдеры'],'add-provider':['Add Provider','Aggiungi Provider','Ajouter un fournisseur','Anbieter hinzufügen','Agregar proveedor','Добавить провайдера'],'edit-provider':['Edit Provider','Modifica Provider','Modifier le fournisseur','Anbieter bearbeiten','Editar proveedor','Редактировать провайдера'],'chat-history-heading':['Chat History','Cronologia Chat','Historique des chats','Chat-Verlauf','Historial de chat','История чатов'],'sidebar-footer':['v1.0 · Local Storage','v1.0 · Memoria locale','v1.0 · Stockage local','v1.0 · Lokaler Speicher','v1.0 · Almacenamiento local','v1.0 · Локальное хранилище'],'configure-prompt':['Configure a provider to begin','Configura un provider per iniziare','Configurez un fournisseur pour commencer','Konfigurieren Sie einen Anbieter, um zu beginnen','Configure un proveedor para comenzar','Настройте провайдера, чтобы начать'],'providers':['Providers','Provider','Fournisseurs','Anbieter','Proveedores','Провайдеры'],'settings':['Settings','Impostazioni','Paramètres','Einstellungen','Configuración','Настройки'],'install':['Install','Installa','Installer','Installieren','Instalar','Установить'],'welcome-title':['Welcome to Giraffe AI','Benvenuto su Giraffe AI','Bienvenue sur Giraffe AI','Willkommen bei Giraffe AI','Bienvenido a Giraffe AI','Добро пожаловать в Giraffe AI'],'welcome-text':['Add a provider to get started, or select one from the sidebar.','Aggiungi un provider per iniziare, o selezionane uno dalla barra laterale.','Ajoutez un fournisseur pour commencer, ou sélectionnez-en un dans la barre latérale.','Fügen Sie einen Anbieter hinzu oder wählen Sie einen aus der Seitenleiste.','Agregue un proveedor para comenzar, o seleccione uno de la barra lateral.','Добавьте провайдера, чтобы начать, или выберите из боковой панели.'],'type-message-placeholder':['Type your message... (Shift+Enter for new line)','Scrivi il tuo messaggio... (Maiusc+Invio per nuova riga)','Tapez votre message... (Maj+Entrée pour nouvelle ligne)','Nachricht eingeben... (Umschalt+Eingabe für neue Zeile)','Escribe tu mensaje... (Mayús+Enter para nueva línea)','Введите сообщение... (Shift+Enter для новой строки)'],'quick-setup':['Quick Setup (Pre-configured)','Configurazione rapida (Pre-configurata)','Configuration rapide (Pré-configurée)','Schnelleinrichtung (Vorkonfiguriert)','Configuración rápida (Preconfigurada)','Быстрая настройка (Предварительно)'],'provider-name':['Provider Name','Nome Provider','Nom du fournisseur','Anbietername','Nombre del proveedor','Имя провайдера'],'api-format':['API Format','Formato API','Format API','API-Format','Formato API','Формат API'],'model-name':['Model Name','Nome Modello','Nom du modèle','Modellname','Nombre del modelo','Имя модели'],'api-endpoint':['API Endpoint URL','URL Endpoint API','URL de l\'endpoint API','API-Endpunkt-URL','URL del endpoint API','URL конечной точки API'],'api-key':['API Key','Chiave API','Clé API','API-Schlüssel','Clave API','API-ключ'],'temperature':['Temperature','Temperatura','Température','Temperatur','Temperatura','Температура'],'max-tokens':['Max Tokens','Token Massimi','Jetons max','Max. Token','Tokens máximos','Макс. токенов'],'top-p':['Top P','Top P','Top P','Top P','Top P','Top P'],'enable-reasoning':['Enable Reasoning/Thinking (for supported models)','Abilita Ragionamento (per modelli supportati)','Activer le raisonnement (pour modèles pris en charge)','Argumentieren/Denken aktivieren (für unterstützte Modelle)','Habilitar razonamiento (para modelos compatibles)','Включить рассуждение (для поддерживаемых моделей)'],'system-prompt':['System Prompt (optional)','Prompt di sistema (opzionale)','Invite système (optionnel)','System-Prompt (optional)','Prompt del sistema (opcional)','Системный промпт (опционально)'],'delete':['Delete','Elimina','Supprimer','Löschen','Eliminar','Удалить'],'cancel':['Cancel','Annulla','Annuler','Abbrechen','Cancelar','Отмена'],'save-provider':['Save Provider','Salva Provider','Enregistrer le fournisseur','Anbieter speichern','Guardar proveedor','Сохранить провайдера'],'chat-settings':['Chat Settings','Impostazioni Chat','Paramètres de chat','Chat-Einstellungen','Configuración de chat','Настройки чата'],'system-prompt-override':['System Prompt (overrides provider default)','Prompt di sistema (sovrascrive il default del provider)','Invite système (remplace le défaut du fournisseur)','System-Prompt (überschreibt Anbieterstandard)','Prompt del sistema (anula el predeterminado del proveedor)','Системный промпт (переопределяет провайдера)'],'temperature-override':['Temperature Override','Sovrascrivi Temperatura','Remplacer la température','Temperatur überschreiben','Anular temperatura','Переопределить температуру'],'max-tokens-override':['Max Tokens Override','Sovrascrivi Token Massimi','Remplacer les jetons max','Max. Token überschreiben','Anular tokens máximos','Переопределить макс. токены'],'save':['Save','Salva','Enregistrer','Speichern','Guardar','Сохранить'],'clear-all-data':['Clear All Data','Cancella tutti i dati','Effacer toutes les données','Alle Daten löschen','Borrar todos los datos','Удалить все данные'],'no-provider-selected':['No Provider Selected','Nessun provider selezionato','Aucun fournisseur sélectionné','Kein Anbieter ausgewählt','Ningún proveedor seleccionado','Провайдер не выбран'],'select-provider':['Select a provider','Seleziona un provider','Sélectionnez un fournisseur','Wählen Sie einen Anbieter','Seleccione un proveedor','Выберите провайдера'],'start-conversation':['Start a conversation','Inizia una conversazione','Démarrer une conversation','Ein Gespräch beginnen','Iniciar una conversación','Начать разговор'],'no-provider-message':['Add or select a provider from the sidebar.','Aggiungi o seleziona un provider dalla barra laterale.','Ajoutez ou sélectionnez un fournisseur dans la barre latérale.','Fügen Sie einen Anbieter hinzu oder wählen Sie einen aus der Seitenleiste.','Agregue o seleccione un proveedor de la barra lateral.','Добавьте или выберите провайдера на боковой панели.'],'no-providers-yet':['No providers yet.<br>Click below to add one.','Nessun provider.<br>Clicca sotto per aggiungerne uno.','Aucun fournisseur.<br>Cliquez ci-dessous pour en ajouter un.','Noch keine Anbieter.<br>Klicken Sie unten, um einen hinzuzufügen.','Aún no hay proveedores.<br>Haga clic abajo para agregar uno.','Провайдеров пока нет.<br>Нажмите ниже, чтобы добавить.'],'no-chats':['No chats yet','Nessuna chat ancora','Aucun chat pour l\'instant','Noch keine Chats','Aún no hay chats','Чатов пока нет'],'untitled-chat':['Untitled Chat','Chat senza titolo','Chat sans titre','Unbenannter Chat','Chat sin título','Безымянный чат'],'reasoning-summary':['🧠 Reasoning (click to expand)','🧠 Ragionamento (clicca per espandere)','🧠 Raisonnement (cliquez pour développer)','🧠 Argumentation (zum Erweitern klicken)','🧠 Razonamiento (clic para expandir)','🧠 Рассуждение (нажмите, чтобы развернуть)'],'copy':['📋 Copy','📋 Copia','📋 Copier','📋 Kopieren','📋 Copiar','📋 Копировать'],'regenerate':['🔄 Regenerate','🔄 Rigenera','🔄 Régénérer','🔄 Neu generieren','🔄 Regenerar','🔄 Пересоздать'],'copied':['📋 Copied to clipboard','📋 Copiato negli appunti','📋 Copié dans le presse-papier','📋 In die Zwischenablage kopiert','📋 Copiado al portapapeles','📋 Скопировано в буфер обмена'],'copy-failed':['⚠ Failed to copy','⚠ Copia fallita','⚠ Échec de la copie','⚠ Kopieren fehlgeschlagen','⚠ Error al copiar','⚠ Не удалось скопировать'],'generation-stopped':['⏹ Generation stopped','⏹ Generazione fermata','⏹ Génération arrêtée','⏹ Generierung gestoppt','⏹ Generación detenida','⏹ Генерация остановлена'],'data-saved':['💾 Data saved','💾 Dati salvati','💾 Données enregistrées','💾 Daten gespeichert','💾 Datos guardados','💾 Данные сохранены'],'provider-saved':['✅ Provider saved successfully!','✅ Provider salvato con successo!','✅ Fournisseur enregistré avec succès !','✅ Anbieter erfolgreich gespeichert!','✅ ¡Proveedor guardado exitosamente!','✅ Провайдер успешно сохранен!'],'provider-deleted':['🗑 Provider deleted.','🗑 Provider eliminato.','🗑 Fournisseur supprimé.','🗑 Anbieter gelöscht.','🗑 Proveedor eliminado.','🗑 Провайдер удален.'],'preset-loaded':['📋 preset loaded. Enter your API key.','📋 preset caricato. Inserisci la tua chiave API.','📋 préréglage chargé. Entrez votre clé API.','📋 Voreinstellung geladen. Geben Sie Ihren API-Schlüssel ein.','📋 preajuste cargado. Ingrese su clave API.','📋 пресет загружен. Введите ваш API-ключ.'],'new-chat-created':['✨ New chat created','✨ Nuova chat creata','✨ Nouveau chat créé','✨ Neuer Chat erstellt','✨ Nuevo chat creado','✨ Новый чат создан'],'settings-saved':['✅ Settings saved','✅ Impostazioni salvate','✅ Paramètres enregistrés','✅ Einstellungen gespeichert','✅ Configuración guardada','✅ Настройки сохранены'],'all-data-cleared':['🗑 All data cleared.','🗑 Tutti i dati cancellati.','🗑 Toutes les données effacées.','🗑 Alle Daten gelöscht.','🗑 Todos los datos borrados.','🗑 Все данные удалены.'],'error-api':['❌ API error','❌ Errore API','❌ Erreur API','❌ API-Fehler','❌ Error de API','❌ Ошибка API'],'stop-generation':['⏹ Generation stopped','⏹ Generazione fermata','⏹ Génération arrêtée','⏹ Generierung gestoppt','⏹ Generación detenida','⏹ Генерация остановлена'],'confirm-delete-provider':['Delete this provider and all its chats? This cannot be undone.','Eliminare questo provider e tutte le sue chat? Non può essere annullato.','Supprimer ce fournisseur et tous ses chats ? Cette action est irréversible.','Diesen Anbieter und alle seine Chats löschen? Dies kann nicht rückgängig gemacht werden.','¿Eliminar este proveedor y todos sus chats? Esta acción no se puede deshacer.','Удалить этого провайдера и все его чаты? Это действие нельзя отменить.'],'confirm-delete-all':['⚠️ This will delete ALL providers, chats, and settings. Are you sure?','⚠️ Questo eliminerà TUTTI i provider, le chat e le impostazioni. Sei sicuro?','⚠️ Cela supprimera TOUS les fournisseurs, chats et paramètres. Êtes-vous sûr ?','⚠️ Dies löscht ALLE Anbieter, Chats und Einstellungen. Sind Sie sicher?','⚠️ Esto eliminará TODOS los proveedores, chats y configuraciones. ¿Está seguro?','⚠️ Это удалит ВСЕХ провайдеров, чаты и настройки. Вы уверены?'],'file-too-large':['File too large: {name}','File troppo grande: {name}','Fichier trop volumineux : {name}','Datei zu groß: {name}','Archivo demasiado grande: {name}','Файл слишком большой: {name}'],'file-type-unsupported':['File type not supported: {name}','Tipo di file non supportato: {name}','Type de fichier non pris en charge : {name}','Dateityp nicht unterstützt: {name}','Tipo de archivo no soportado: {name}','Тип файла не поддерживается: {name}'],'file-already-attached':['File already attached: {name}','File già allegato: {name}','Fichier déjà attaché : {name}','Datei bereits angehängt: {name}','Archivo ya adjuntado: {name}','Файл уже прикреплен: {name}'],'files-attached':['{n} file(s) attached','{n} file allegati','{n} fichier(s) attaché(s)','{n} Datei(en) angehängt','{n} archivo(s) adjuntado(s)','прикреплено файл(ов): {n}'],'uploading-files':['Uploading files...','Caricamento file...','Téléchargement des fichiers...','Dateien werden hochgeladen...','Subiendo archivos...','Загрузка файлов...'],'attachments-disabled':['Attachments (images/documents) are disabled for this provider: {name}','Allegati (immagini/documenti) disabilitati per questo provider: {name}','Pièces jointes (images/documents) désactivées pour ce fournisseur : {name}','Anhänge (Bilder/Dokumente) für diesen Anbieter deaktiviert: {name}','Adjuntos (imágenes/documentos) deshabilitados para este proveedor: {name}','Вложения (изображения/документы) отключены для этого провайдера: {name}'],'text-limit':['Text Char Limit / File','Limite Caratteri / File','Limite de caractères / Fichier','Zeichenlimit / Datei','Límite de caracteres / Archivo','Лимит символов / файл']};
         let cl=L[0],cli=0;
         function dt(){const b=(navigator.language||'').split('-')[0].toLowerCase();cli=L.indexOf(b);return cli>=0?L[cli]:L[0]}
         function _(k){return(T[k]||[])[cli]||(T[k]||[])[0]||k}
@@ -336,6 +337,8 @@
         const SK='giraffe_ai_data';
         let D={providers:[],activeProviderId:null,chats:{},activeChatId:null,settings:{systemPrompt:'',temperature:null,maxTokens:null},theme:'dark',language:L[0],totalTokens:0};
         let iS=false,aC=null;
+        const messageViews=new WeakMap(),pendingMessages=new WeakSet();
+        let renderedChat=null;
         let pendingAttachments=[];
         const MAX_FILE_SIZE=20*1024*1024;
         const ALLOWED_TYPES=['application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/msword','text/plain','text/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','image/png','image/jpeg','image/gif','image/webp','text/markdown','application/json','text/xml','application/xml','text/html','text/x-python','text/javascript','text/x-java','text/x-c','text/css'];
@@ -428,29 +431,63 @@
             const ms=gAMs();
             const p=gAP();
             if(!p||ms.length===0){
+                renderedChat=null;
                 c.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>${p?_('start-conversation'):_('no-provider-selected')}</h3><p>${p?_('welcome-text'):_('no-provider-message')}</p></div>`;
                 return
             }
-            c.innerHTML=ms.map((m,i)=>rMsg(m,i)).join('');
-            requestAnimationFrame(()=>{c.scrollTop=c.scrollHeight})
+            let changed=false;
+            const ch=gAC();
+            if(renderedChat!==ch){c.replaceChildren();renderedChat=ch;changed=true}
+            // Keep existing message nodes so streaming does not restart every message's entrance animation.
+            ms.forEach((m,i)=>{
+                let view=messageViews.get(m);
+                const pending=pendingMessages.has(m);
+                if(!view||view.content!==m.content||view.thinking!==m.thinking||view.thinkingExpanded!==m.thinkingExpanded||view.attachments!==m.attachments||view.pending!==pending||view.language!==cl){
+                    const attachmentHTML=view&&view.attachments===m.attachments&&view.language===cl?view.attachmentHTML:renderAgentAttachments(m.attachments);
+                    const body=rMsgBody(m,attachmentHTML);
+                    if(!view){
+                        const wrapper=document.createElement('div');
+                        wrapper.innerHTML=rMsg(m,i,body);
+                        view={node:wrapper.firstElementChild,index:i,actionsLanguage:cl};
+                        messageViews.set(m,view)
+                    }else if(view.body!==body){
+                        const content=view.node.querySelector('.message-content');
+                        const thinking=content.querySelector('.thinking-block');
+                        const expanded=thinking?.open;
+                        content.innerHTML=body;
+                        const updatedThinking=content.querySelector('.thinking-block');
+                        if(thinking&&updatedThinking)updatedThinking.open=expanded;
+                        changed=true
+                    }
+                    Object.assign(view,{body,content:m.content,thinking:m.thinking,thinkingExpanded:m.thinkingExpanded,attachments:m.attachments,pending,language:cl,attachmentHTML})
+                }
+                if(view.index!==i||view.actionsLanguage!==cl){
+                    view.node.querySelector('.message-actions').innerHTML=rMsgActions(m,i);
+                    view.index=i;view.actionsLanguage=cl
+                }
+                if(c.children[i]!==view.node){c.insertBefore(view.node,c.children[i]||null);changed=true}
+            });
+            while(c.children.length>ms.length){c.lastElementChild.remove();changed=true}
+            if(changed)requestAnimationFrame(()=>{c.scrollTop=c.scrollHeight})
         }
-        function rMsg(m,i){
-            const u=m.role==='user';
-            const av=u?
-                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>':
-                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="16" rx="2"/><path d="M6 6h.01M6 10h.01M6 14h.01"/></svg>';
+        function rMsgBody(m,attHtml){
             let h=rMD(m.content||'');
             if(m.thinking&&m.thinking.trim()){
                 const th=rMD(m.thinking);
                 h=`<details class="thinking-block" ${m.thinkingExpanded?'open':''}><summary>${_('reasoning-summary')}</summary><div style="margin-top:6px">${th}</div></details>`+h
             }
-            let attHtml='';
-            if(m.attachments&&Array.isArray(m.attachments)&&m.attachments.length){
-                attHtml=renderAgentAttachments(m.attachments);
-            }
-            const act=!u?`<div class="message-actions"><button onclick="copyMessage(${i})">${_('copy')}</button><button onclick="regenerateMessage(${i})">${_('regenerate')}</button></div>`:
-                `<div class="message-actions"><button onclick="copyMessage(${i})">${_('copy')}</button></div>`;
-            return`<div class="message ${u?'user':'assistant'}"><div class="message-avatar">${av}</div><div><div class="message-content">${h}${attHtml}</div>${act}</div></div>`
+            if(!h&&!attHtml&&pendingMessages.has(m))h=`<span class="message-loading" role="status">${_('waiting-response')}</span>`;
+            return h+attHtml
+        }
+        function rMsgActions(m,i){
+            return`<button onclick="copyMessage(${i})">${_('copy')}</button>`+(m.role==='assistant'?`<button onclick="regenerateMessage(${i})">${_('regenerate')}</button>`:'')
+        }
+        function rMsg(m,i,body){
+            const u=m.role==='user';
+            const av=u?
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>':
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="16" rx="2"/><path d="M6 6h.01M6 10h.01M6 14h.01"/></svg>';
+            return`<div class="message ${u?'user':'assistant'}"><div class="message-avatar">${av}</div><div><div class="message-content">${body}</div><div class="message-actions">${rMsgActions(m,i)}</div></div></div>`
         }
         function rMD(t){
             if(!t)return'';
@@ -787,6 +824,7 @@
             if(c&&ch.title===_('untitled-chat')&&ch.messages.length===1)ch.title=c.slice(0,50)+(c.length>50?'...':'');
             sD();rA();uIS();
             const am={role:'assistant',content:'',thinking:'',thinkingExpanded:false,timestamp:Date.now()};
+            pendingMessages.add(am);
             ch.messages.push(am);
             sD();rA();uIS();
             let ms=bAM(p,ch);
@@ -806,6 +844,7 @@
                 if(e.name==='AbortError')am.content+='\n\n⚠️ *[Generation stopped by user]*';
                 else{am.content+=`\n\n⚠️ **Error:** ${eH(e.message)}`;st('error-api','error')}
             }finally{
+                pendingMessages.delete(am);
                 iS=false;aC=null;
                 const tokenCount=approxTokenCount(am.content);
                 const elapsedSec=(Date.now()-startTime)/1000;
@@ -836,14 +875,13 @@
             return m
         }
         function reE(ep){
-            ep=ep.replace(/\/+$/,'');
-            try{
-                const u=new URL(ep);
-                if(location.hostname==='localhost'&&location.port==='8000'&&(u.hostname==='127.0.0.1'||u.hostname==='localhost')&&u.pathname.startsWith('/v1/')){
-                    u.hostname=location.hostname;u.port=location.port;return u.href
-                }
-                return ep
-            }catch(e){return ep}
+            // Respect the saved endpoint; a different local port may host a different backend.
+            return ep.replace(/\/+$/,'')
+        }
+        function rStream(ch,am,previous){
+            if(am.content===previous[0]&&am.thinking===previous[1]&&am.attachments===previous[2])return;
+            sD();
+            if(gAC()===ch)rMsgs()
         }
         async function sOA(p,ms,am,ch,startTime){
             const ep=reE(p.endpoint);
@@ -860,6 +898,7 @@
             while(true){
                 const{done,value}=await reader.read();
                 if(done)break;
+                const previous=[am.content,am.thinking,am.attachments];
                 buf+=d.decode(value,{stream:true});
                 const lines=buf.split('\n');buf=lines.pop()||'';
                 for(const l of lines){
@@ -879,7 +918,7 @@
                         if(parsed.choices?.[0]?.message?.reasoning){tc=parsed.choices[0].message.reasoning;am.thinking=tc;am.thinkingExpanded=true}
                     }catch{}
                 }
-                sD();rMsgs();$('chatMessages').scrollTop=$('chatMessages').scrollHeight
+                rStream(ch,am,previous)
             }
             am.content=fc;am.thinking=tc;am.timestamp=Date.now()
         }
@@ -894,6 +933,7 @@
             while(true){
                 const{done,value}=await reader.read();
                 if(done)break;
+                const previous=[am.content,am.thinking,am.attachments];
                 buf+=d.decode(value,{stream:true});
                 const lines=buf.split('\n');buf=lines.pop()||'';
                 for(const l of lines){
@@ -908,7 +948,7 @@
                         if(parsed.done)break
                     }catch{}
                 }
-                sD();rMsgs();$('chatMessages').scrollTop=$('chatMessages').scrollHeight
+                rStream(ch,am,previous)
             }
             am.content=fc;am.timestamp=Date.now()
         }
@@ -927,6 +967,7 @@
             while(true){
                 const{done,value}=await reader.read();
                 if(done)break;
+                const previous=[am.content,am.thinking,am.attachments];
                 buf+=d.decode(value,{stream:true});
                 const lines=buf.split('\n');buf=lines.pop()||'';
                 for(const l of lines){
@@ -946,7 +987,7 @@
                         }
                     }catch{}
                 }
-                sD();rMsgs();$('chatMessages').scrollTop=$('chatMessages').scrollHeight
+                rStream(ch,am,previous)
             }
             am.content=fc;am.thinking=tc;am.timestamp=Date.now()
         }
@@ -962,6 +1003,7 @@
             while(true){
                 const{done,value}=await reader.read();
                 if(done)break;
+                const previous=[am.content,am.thinking,am.attachments];
                 buf+=d.decode(value,{stream:true});
                 const lines=buf.split('\n');buf=lines.pop()||'';
                 for(const l of lines){
@@ -979,7 +1021,7 @@
                         for(const pt of parts){if(pt.text){fc+=pt.text;am.content=fc}}
                     }catch{}
                 }
-                sD();rMsgs();$('chatMessages').scrollTop=$('chatMessages').scrollHeight
+                rStream(ch,am,previous)
             }
             am.content=fc;am.timestamp=Date.now()
         }

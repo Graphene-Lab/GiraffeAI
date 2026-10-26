@@ -17,21 +17,7 @@ const js = html.substring(scriptStart + 8, scriptEnd)
 // The IIFE is (function(){ ... })(); — we grab everything inside and rely on
 // the const definitions being hoisted before our test code runs (they aren't,
 // so we eval the whole thing in a sandbox with DOM stubs and expose internals).
-const makeEl = (id) => ({
-    id, innerHTML: '', className: '', value: '', checked: false,
-    style: {}, disabled: false, placeholder: '', rows: 0,
-    querySelector: () => null, querySelectorAll: () => [],
-    classList: { toggle() {} }, setAttribute() {}, appendChild() {}, focus() {},
-    scrollHeight: 0, scrollTop: 0, addEventListener() {},
-    get textContent() { return this._t || ''; },
-    // eH() escapes text through a probe element (textContent in, innerHTML out): the stub must
-    // mirror the DOM, or every escaped value in a rendered attachment chip comes back empty.
-    set textContent(v) {
-        this._t = v == null ? '' : String(v);
-        this.innerHTML = this._t.replace(/[&<>"']/g,
-            c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    },
-});
+const { makeEl } = require('./dom_stub');
 const elements = {};
 const sandbox = {
     console,
